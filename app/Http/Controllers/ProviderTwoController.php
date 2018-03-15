@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
- * Class ProviderOneController
+ * Class ProviderTwoController
  * @package App\Http\Controllers
  */
-class ProviderOneController extends Controller
+class ProviderTwoController extends Controller
 {
+
     /**
-     *  salt used when env('PROVIDER_ONE_SALT') is not set
+     *  salt used when env('PROVIDER_TWO_SALT') is not set
      */
     const DEFAULT_SALT = 123;
 
@@ -23,7 +24,7 @@ class ProviderOneController extends Controller
     /**
      * @param Request $request
      * @param MoneyService $moneyService
-     * @return $this
+     * @return \Illuminate\Http\Response|\Laravel\Lumen\Http\ResponseFactory
      */
     public function topUpUserBalance(Request $request, MoneyService $moneyService)
     {
@@ -33,42 +34,40 @@ class ProviderOneController extends Controller
             Log::warning('ProviderOne validator fails', [
                 'request' => $request->all(), 'errors' => $validator->errors()->toArray()
             ]);
-            return response('<answer>0</answer>', 200)
-                ->header('Content-Type', 'text/xml');
+            return response('ERROR', 200);
         }
 
-        $user = User::query()->find($request->get('a'));
-        $amount = (int)$request->get('b'); //todo: make Money class like @link http://moneyphp.org
+        $user = User::query()->find($request->get('x'));
+        $amount = (int)$request->get('y'); //todo: make Money class like @link http://moneyphp.org
 
-        $result = (int)$moneyService->topUpBalance($user, $amount);
+        $result = (bool)$moneyService->topUpBalance($user, $amount);
 
         if ($result){
             Log::info('ProviderOne request success', ['request' => $request->all()]);
         }else{
             Log::warning('ProviderOne request fails', ['request' => $request->all()]);
         }
-
-        return response("<answer>{$result}</answer>", 200)
-            ->header('Content-Type', 'text/xml');
+        $response = $result ? 'OK' : 'ERROR';
+        return response($response, 200);
     }
 
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Validation\Validator
      */
-    protected function makeTopUpValidator(Request $request)
+    protected function makeTopUpValidator(Request $request) : \Illuminate\Validation\Validator
     {
         $validator = Validator::make($request->all(), [
-            'a' => 'required|integer|min:1|exists:users,id',
-            'b' => 'required|integer|min:1',
+            'x' => 'required|integer|min:1|exists:users,id',
+            'y' => 'required|integer|min:1',
             'md5' => 'required'
         ]);
 
         $validator->after(function (\Illuminate\Validation\Validator $validator) {
             $data = $validator->getData();
-            $salt = env('PROVIDER_ONE_SALT', self::DEFAULT_SALT);
-            if ($data['md5'] !== md5($data['a'] . $data['b'] . $salt)){
+            $salt = env('PROVIDER_TWO_SALT', self::DEFAULT_SALT);
+            if ($data['md5'] !== md5($data['x'] . $data['y'] . $salt)){
                 $validator->errors()->add('md5', 'Something is wrong with this field!');
             }
         });
