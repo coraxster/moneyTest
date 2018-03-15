@@ -24,6 +24,10 @@ class UserTransaction extends Model
         'amount'
     ];
 
+    protected $hidden = [
+        'user_id', 'updated_at'
+    ];
+
 
     public function user() : BelongsTo
     {

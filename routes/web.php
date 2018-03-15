@@ -18,3 +18,4 @@ $router->get('/', function () use ($router) {
 
 $router->get('/test1', 'ProviderOneController@topUpUserBalance');
 $router->get('/asdgOasds', 'ProviderTwoController@topUpUserBalance');
+$router->get('/{user_id}/transactions', 'UserController@listTransactions');
