@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use \Illuminate\Support\Facades\DB;
+use \App\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,6 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call('UsersTableSeeder');
+        $numOfUsers = 10;
+        for ($i = 1; $i <= $numOfUsers; $i++){
+            User::query()->create([
+                'name' => "User $i " . str_random(10),
+                'balance' => rand(0,10000)
+            ]);
+        }
     }
 }

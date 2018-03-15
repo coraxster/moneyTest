@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -18,7 +19,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'name', 'email',
+        'name'
     ];
 
     /**
@@ -27,6 +28,27 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $hidden = [
-        'password',
+        'balance',
     ];
+
+
+    public function transactions() : HasMany
+    {
+        return $this->hasMany(UserTransaction::class);
+    }
+
+
+
+    //  todo: use cknow/laravel-money with accessors instead simple int
+    //  @link http://moneyphp.org/en/latest/index.html
+//    public function setBalance(Money $balance)
+//    {
+//
+//    }
+//
+//    public function getBalance() : Money
+//    {
+//
+//    }
+
 }
