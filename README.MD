@@ -4,7 +4,7 @@
 
 ```bash
 docker-compose up
-docker-compose exec composer update
+docker-compose exec workspace composer update
 docker-compose exec workspace php artisan migrate --seed
 ```
 
